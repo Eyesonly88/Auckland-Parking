@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CodeFont" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#E3E4FA</item>
+        <item name="android:typeface">serif</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">#EDEDED</item>
+        <item name="android:button">@drawable/btn</item>
+    </style>
+    
+    <style name="shadow">
+    <item name="android:shadowColor">#000000</item>
+    <item name="android:shadowDx">10</item>
+    <item name="android:shadowDy">10</item>
+    <item name="android:shadowRadius">10</item>
+    </style>
+</resources>

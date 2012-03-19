@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AucklandParking</string>
+    <string name="btn_central">Auckland Central(CBD)</string>
+    <string name="btn_north">Auckland North</string>
+    <string name="label_homeScreen">Choose a region to find car parking in Auckland</string>
+    <string name="label_title">Auckland Parking</string>
+    <string name="label_tip">Friendly Tip:</string>
+    <string name="instructions">After choosing the region, Tap on the parking icon (shown on the map) to display all the relevant information for that park.</string>
+    <color name="btnTextColor">#fff</color>
+    <color name="labelGreyColor">#919191</color>
+    <color name="labelBlueColor">#0276FD</color>
+
+</resources>

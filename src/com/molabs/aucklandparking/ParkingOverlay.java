@@ -8,6 +8,7 @@ package com.molabs.aucklandparking;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.widget.Toast;
@@ -29,18 +30,15 @@ public class ParkingOverlay extends BalloonItemizedOverlay<OverlayItem>{
 		super(defaultMarker, mapView);
 		boundCenter(defaultMarker);
 		mContext = mapView.getContext();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected OverlayItem createItem(int i) {
-		// TODO Auto-generated method stub
 		return parks.get(i);
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
 		return parks.size();
 	}
 
@@ -64,7 +62,6 @@ public class ParkingOverlay extends BalloonItemizedOverlay<OverlayItem>{
 	}
 
 	public void setCurrentLocation(Location loc) {
-		// TODO Auto-generated method stub
 		this.currentLocation = loc;
 	}
 //	public Location convertGpToLoc(GeoPoint gp){

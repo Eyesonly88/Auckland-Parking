@@ -24,7 +24,6 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 
 public class AucklandParkingActivity extends MapActivity implements
 		LocationListener {
@@ -32,7 +31,6 @@ public class AucklandParkingActivity extends MapActivity implements
 	private static final double AUCKNORTHLAT = -36.78749768272416;
 	private static final double AUCKCBDLAT = -36.852634105359435;
 	private static final double AUCKCBDLON = 174.76587295532227;
-	/** Called when the activity is first created. */
 	private MapController mapController;
 	private MapView mapView;
 	private LocationManager locationManager;
@@ -42,6 +40,7 @@ public class AucklandParkingActivity extends MapActivity implements
 	private ParkingOverlay currPos;
 	private String region = null;
 
+	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,10 +56,10 @@ public class AucklandParkingActivity extends MapActivity implements
 		mapController = mapView.getController();
 		mapController.setZoom(16);
 
-		getLastLocation();
+		setLatestLocation();
 		animateToCurrentLocation();
 		// drawCurrPositionOverlay();
-		drawParks();
+		renderParksOnMap();
 
 	}
 
@@ -68,78 +67,53 @@ public class AucklandParkingActivity extends MapActivity implements
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
-
-	public void drawParks() {
-		GeoPoint tempPoint;
-		OverlayItem overlayItem;
+	
+	public void renderParksOnMap() {
 		TypedArray wilsonParkInfo = null, wilsonParkGeo = null, tournamentParkInfo = null, tournamentParkGeo = null;
+		Drawable wilsonMarker = null, tournamentMarker = null;
+		
+		wilsonMarker = getResources().getDrawable(R.drawable.wilsonmarker);
+		tournamentMarker = getResources().getDrawable(R.drawable.tournamentmarker);
 
-		Drawable wilsonMarker = getResources().getDrawable(
-				R.drawable.wilsonmarker);
-		ParkingOverlay wilsonParkPos = new ParkingOverlay(wilsonMarker, mapView);
-
-		Drawable tournamentMarker = getResources().getDrawable(
-				R.drawable.tournamentmarker);
-		ParkingOverlay tournamentParkPos = new ParkingOverlay(tournamentMarker,
-				mapView);
-
-		List<Overlay> overlays = mapView.getOverlays();
+		// Create parks
+		Park wilsonPark = new Park(wilsonParkInfo, wilsonParkGeo, wilsonMarker, mapView, "Wilson Parking");
+		Park tournamentPark = new Park(tournamentParkInfo, tournamentParkGeo, tournamentMarker, mapView, "Tournament Parking");
+		
+		List<Overlay> overlayList = mapView.getOverlays();
 		Resources res = getResources();
 
 		if (region.equals("CBD")) {
-			wilsonParkInfo = res.obtainTypedArray(R.array.wilsonParkInfo);
-			wilsonParkGeo = res.obtainTypedArray(R.array.wilsonParkGeo);
-			tournamentParkInfo = res
-					.obtainTypedArray(R.array.TournamentParkInfo);
-			tournamentParkGeo = res.obtainTypedArray(R.array.TournamentParkGeo);
+			wilsonPark.setParkInformation(res.obtainTypedArray(R.array.wilsonParkInfo));
+			wilsonPark.setParkGeoPosition(res.obtainTypedArray(R.array.wilsonParkGeo));
+			
+			tournamentPark.setParkInformation(res.obtainTypedArray(R.array.TournamentParkInfo));
+			tournamentPark.setParkGeoPosition(res.obtainTypedArray(R.array.TournamentParkGeo));
 
 			// adding wilson parks
-			for (int i = 0; i < wilsonParkGeo.length(); i++) {
-				String[] geo = wilsonParkGeo.getString(i).split(",");
-				tempPoint = new GeoPoint(
-						(int) (Double.parseDouble(geo[0]) * 1e6),
-						(int) (Double.parseDouble(geo[1]) * 1e6));
-				overlayItem = new OverlayItem(tempPoint, "Wilson Parking",
-						wilsonParkInfo.getString(i));
-				wilsonParkPos.addOverlay(overlayItem);
-			}
+			wilsonPark.buildParkingOverlay();
 			// adding tournament parks
-			for (int i = 0; i < tournamentParkInfo.length(); i++) {
-				String[] geo = tournamentParkGeo.getString(i).split(",");
-				tempPoint = new GeoPoint(
-						(int) (Double.parseDouble(geo[0]) * 1e6),
-						(int) (Double.parseDouble(geo[1]) * 1e6));
-				overlayItem = new OverlayItem(tempPoint, "Tournament Parking",
-						tournamentParkInfo.getString(i));
-				tournamentParkPos.addOverlay(overlayItem);
-			}
-			overlays.add(wilsonParkPos);
-			overlays.add(tournamentParkPos);
+			tournamentPark.buildParkingOverlay();
+			
+			overlayList.add(wilsonPark.getParkOverlay());
+			overlayList.add(tournamentPark.getParkOverlay());
 
 		} else if (region.equals("NORTH")) {
-			wilsonParkInfo = res.obtainTypedArray(R.array.wilsonParkNorthInfo);
-			wilsonParkGeo = res.obtainTypedArray(R.array.wilsonParkNorthGeo);
+			wilsonPark.setParkInformation(res.obtainTypedArray(R.array.wilsonParkNorthInfo));
+			wilsonPark.setParkGeoPosition(res.obtainTypedArray(R.array.wilsonParkNorthGeo));
 
-			// adding wilson parks
-			for (int i = 0; i < wilsonParkGeo.length(); i++) {
-				String[] geo = wilsonParkGeo.getString(i).split(",");
-				tempPoint = new GeoPoint(
-						(int) (Double.parseDouble(geo[0]) * 1e6),
-						(int) (Double.parseDouble(geo[1]) * 1e6));
-				overlayItem = new OverlayItem(tempPoint, "Wilson Parking",
-						wilsonParkInfo.getString(i));
-				wilsonParkPos.addOverlay(overlayItem);
-			}
-			overlays.add(wilsonParkPos);
+			wilsonPark.buildParkingOverlay();
+			overlayList.add(wilsonPark.getParkOverlay());
 		}
 
 		if (currentLocation != null) {
-			wilsonParkPos.setCurrentLocation(currentLocation);
+			wilsonPark.getParkOverlay().setCurrentLocation(currentLocation);
 		}
 
 	}
 
-	public void getLastLocation() {
+	
+
+	public void setLatestLocation() {
 		String provider = getBestProvider();
 		if (provider != null && this.locationManager != null) {
 			currentLocation = this.locationManager
@@ -202,24 +176,6 @@ public class AucklandParkingActivity extends MapActivity implements
 	}
 
 	@Override
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void onResume() {
 		super.onResume();
 		if (this.locationManager != null) {
@@ -234,6 +190,21 @@ public class AucklandParkingActivity extends MapActivity implements
 		if (this.locationManager != null) {
 			this.locationManager.removeUpdates(this);
 		}
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		
 	}
 
 }
